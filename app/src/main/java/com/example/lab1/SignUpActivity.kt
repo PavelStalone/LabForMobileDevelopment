@@ -2,7 +2,6 @@ package com.example.lab1
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
@@ -11,13 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -35,14 +27,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.lab1.domain.model.User
 import com.example.lab1.ui.component.PasswordField
 import com.example.lab1.ui.component.PrimaryButton
 import com.example.lab1.ui.theme.AppTheme
 
-class SignUpActivity : ComponentActivity() {
+class SignUpActivity : LogActivity() {
+
+    override val TAG: String = "SignUpActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             AppTheme {
@@ -51,8 +47,8 @@ class SignUpActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(inner)
                             .padding(24.dp),
-                        onRegistered = { _, email ->
-                            setResult(RESULT_OK, Intent().putExtra("email", email))
+                        onRegistered = { user ->
+                            setResult(RESULT_OK, Intent().putExtra("user", user))
                             finish()
                         },
                         onBackToSignIn = {
@@ -74,7 +70,7 @@ class SignUpActivity : ComponentActivity() {
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     onBackToSignIn: () -> Unit = {},
-    onRegistered: (name: String, email: String) -> Unit = { _, _ -> },
+    onRegistered: (user: User) -> Unit = { _ -> },
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -208,7 +204,14 @@ fun SignUpScreen(
             enabled = canRegister,
             onClick = {
                 if (validate()) {
-                    onRegistered(name, email)
+                    onRegistered(
+                        User(
+                            sex = sex,
+                            email = email,
+                            userName = name,
+                            password = password,
+                        )
+                    )
                 }
             },
         )

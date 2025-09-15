@@ -1,7 +1,6 @@
 package com.example.lab1
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
@@ -15,14 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +41,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.lab1.ui.theme.AppTheme
 
-class HomeActivity : ComponentActivity() {
+class HomeActivity : LogActivity() {
+
+    override val TAG: String = "HomeActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,7 +53,8 @@ class HomeActivity : ComponentActivity() {
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     HomeScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        userName = intent.getStringExtra("name")
                     )
                 }
             }
@@ -65,8 +66,9 @@ class HomeActivity : ComponentActivity() {
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
+    userName: String? = null,
 ) {
-    var query by remember { mutableStateOf("") }
+    var query by remember { mutableStateOf(userName ?: "") }
 
     LazyColumn(
         modifier = modifier

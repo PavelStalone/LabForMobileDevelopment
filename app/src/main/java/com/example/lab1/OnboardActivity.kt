@@ -33,7 +33,9 @@ import com.example.lab1.ui.icon.Empire
 import com.example.lab1.ui.icon.Mando
 import com.example.lab1.ui.theme.AppTheme
 
-class OnboardActivity : ComponentActivity() {
+class OnboardActivity : LogActivity() {
+
+    override val TAG: String = "OnboardActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

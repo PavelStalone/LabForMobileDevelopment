@@ -2,7 +2,6 @@ package com.example.lab1
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,15 +24,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.lab1.domain.model.User
 import com.example.lab1.ui.component.EmailField
 import com.example.lab1.ui.component.PasswordField
 import com.example.lab1.ui.theme.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SignInActivity : ComponentActivity() {
+class SignInActivity : LogActivity() {
 
-    private val emailFlow = MutableStateFlow("")
+    override val TAG: String = "SignInActivity"
+
+    private val userFlow: MutableStateFlow<User?> = MutableStateFlow(null)
 
     private val launcher = registerForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -43,7 +47,7 @@ class SignInActivity : ComponentActivity() {
             check(RESULT_OK == result.resultCode)
             checkNotNull(data)
 
-            emailFlow.value = data.getStringExtra("email").toString()
+            userFlow.value = data.getParcelableExtra("user", User::class.java)
         }
     }
 
@@ -51,8 +55,12 @@ class SignInActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val user by userFlow.collectAsState()
+
             AppTheme {
                 SignInScreen(
+                    userName = user?.userName,
+                    userEmail = user?.email,
                     onSignUp = {
                         launcher.launch(
                             Intent(
@@ -66,10 +74,9 @@ class SignInActivity : ComponentActivity() {
                             Intent(
                                 this@SignInActivity,
                                 HomeActivity::class.java
-                            )
+                            ).putExtra("name", user?.userName)
                         )
                     },
-                    userEmail = emailFlow.collectAsState().value
                 )
             }
         }
@@ -78,9 +85,10 @@ class SignInActivity : ComponentActivity() {
 
 @Composable
 fun SignInScreen(
+    userName: String? = null,
+    userEmail: String? = null,
     onSignUp: () -> Unit = {},
     onSignedIn: () -> Unit = {},
-    userEmail: String? = null,
 ) {
     var email by remember(userEmail) { mutableStateOf(userEmail ?: "") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -121,6 +129,14 @@ fun SignInScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            userName?.let { name ->
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Приветствую $name",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
             EmailField(
                 email = email,
                 error = emailError,
