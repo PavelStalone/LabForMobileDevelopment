@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Valkyrie.Settings">
+    <option name="iconPackDestination" value="D:\Projects\Android\lab\app\src\main\java\com\example\lab1\ui\icon" />
+    <option name="iconPackName" value="CustomIcons" />
+    <option name="iconPackPackage" value="com.example.lab1.ui.icon" />
+    <option name="mode" value="IconPack" />
+    <option name="packageName" value="com.example.lab1.ui.icon" />
+  </component>
+</project>
