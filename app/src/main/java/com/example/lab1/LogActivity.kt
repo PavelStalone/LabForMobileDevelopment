@@ -25,7 +25,7 @@ abstract class LogActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-
+        lifecycle.removeObserver(lifeCycleObserver)
 
         super.onDestroy()
     }
