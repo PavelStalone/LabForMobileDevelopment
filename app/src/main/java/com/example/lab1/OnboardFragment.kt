@@ -1,10 +1,8 @@
 package com.example.lab1
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.compose.content
 import com.example.lab1.ui.icon.CloneTrooper
 import com.example.lab1.ui.icon.CustomIcons
 import com.example.lab1.ui.icon.DarthVader
@@ -33,38 +33,30 @@ import com.example.lab1.ui.icon.Empire
 import com.example.lab1.ui.icon.Mando
 import com.example.lab1.ui.theme.AppTheme
 
-class OnboardActivity : LogActivity() {
+class OnboardFragment : Fragment() {
 
-    override val TAG: String = "OnboardActivity"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()
-        setContent {
-            AppTheme {
-                Scaffold { innerPadding ->
-                    OnboardScreen(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .padding(horizontal = 24.dp),
-                        onSignIn = {
-                            startActivity(
-                                Intent(
-                                    this@OnboardActivity,
-                                    SignInActivity::class.java
-                                )
-                            )
-                        },
-                    )
-                }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = content {
+        AppTheme {
+            Scaffold { innerPadding ->
+                OnboardScreen(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(horizontal = 24.dp),
+                    onSignIn = {
+                        MainActivity.navigateToFragment(parentFragmentManager, SignInFragment())
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-fun OnboardScreen(
+private fun OnboardScreen(
     modifier: Modifier = Modifier,
     onSignIn: () -> Unit = {},
 ) {

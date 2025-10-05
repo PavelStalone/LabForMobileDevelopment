@@ -1,10 +1,8 @@
 package com.example.lab1
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -26,65 +25,57 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.compose.content
 import com.example.lab1.domain.model.User
 import com.example.lab1.ui.component.EmailField
 import com.example.lab1.ui.component.PasswordField
 import com.example.lab1.ui.theme.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SignInActivity : LogActivity() {
+class SignInFragment : Fragment() {
 
-    override val TAG: String = "SignInActivity"
+    private val userFlow: MutableStateFlow<User?> =
+        MutableStateFlow(null)
 
-    private val userFlow: MutableStateFlow<User?> = MutableStateFlow(null)
-
-    private val launcher = registerForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        runCatching {
-            val data = result.data
-
-            check(RESULT_OK == result.resultCode)
-            checkNotNull(data)
-
-            userFlow.value = data.getParcelableExtra("user", User::class.java)
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = content {
+        AppTheme {
             val user by userFlow.collectAsState()
 
-            AppTheme {
-                SignInScreen(
-                    userName = user?.userName,
-                    userEmail = user?.email,
-                    onSignUp = {
-                        launcher.launch(
-                            Intent(
-                                this@SignInActivity,
-                                SignUpActivity::class.java
-                            )
-                        )
-                    },
-                    onSignedIn = {
-                        startActivity(
-                            Intent(
-                                this@SignInActivity,
-                                HomeActivity::class.java
-                            ).putExtra("name", user?.userName)
-                        )
-                    },
-                )
+            LaunchedEffect(Unit) {
+                userFlow.value = arguments?.getParcelable("user", User::class.java)
             }
+
+            SignInScreen(
+                userName = user?.userName ?: "",
+                userEmail = user?.email ?: "",
+                onSignUp = {
+                    MainActivity.navigateToFragment(
+                        parentFragmentManager,
+                        SignUpFragment()
+                    )
+                },
+                onSignedIn = {
+                    val bundle = bundleOf("name" to user?.userName)
+
+                    MainActivity.navigateToFragment(
+                        parentFragmentManager,
+                        HomeFragment(),
+                        bundle
+                    )
+                },
+            )
         }
     }
 }
 
 @Composable
-fun SignInScreen(
+private fun SignInScreen(
     userName: String? = null,
     userEmail: String? = null,
     onSignUp: () -> Unit = {},

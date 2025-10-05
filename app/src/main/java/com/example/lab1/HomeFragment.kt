@@ -1,8 +1,8 @@
 package com.example.lab1
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -39,24 +39,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.compose.content
+import com.example.lab1.domain.model.User
 import com.example.lab1.ui.theme.AppTheme
 
-class HomeActivity : LogActivity() {
+class HomeFragment : Fragment() {
 
-    override val TAG: String = "HomeActivity"
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = content {
+        AppTheme {
+            val userName = arguments?.getString("name")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()
-        setContent {
-            AppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        userName = intent.getStringExtra("name")
-                    )
-                }
+            Scaffold { innerPadding ->
+                HomeScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    userName = userName
+                )
             }
         }
     }
@@ -169,3 +171,4 @@ private fun SearchField(
         modifier = modifier
     )
 }
+

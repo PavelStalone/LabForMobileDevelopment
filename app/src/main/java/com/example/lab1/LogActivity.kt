@@ -3,11 +3,12 @@ package com.example.lab1
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
-abstract class LogActivity : ComponentActivity() {
+abstract class LogActivity : AppCompatActivity() {
 
     protected abstract val TAG: String
 

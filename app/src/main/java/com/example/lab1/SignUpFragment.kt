@@ -1,9 +1,8 @@
 package com.example.lab1
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,47 +26,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.compose.content
 import com.example.lab1.domain.model.User
 import com.example.lab1.ui.component.PasswordField
 import com.example.lab1.ui.component.PrimaryButton
 import com.example.lab1.ui.theme.AppTheme
 
-class SignUpActivity : LogActivity() {
+class SignUpFragment : Fragment() {
 
-    override val TAG: String = "SignUpActivity"
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = content {
+        AppTheme {
+            Scaffold { innerPadding ->
+                SignUpScreen(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(24.dp),
+                    onRegistered = { user ->
+                        val bundle = bundleOf("user" to user)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()
-        setContent {
-            AppTheme {
-                Scaffold { inner ->
-                    SignUpScreen(
-                        modifier = Modifier
-                            .padding(inner)
-                            .padding(24.dp),
-                        onRegistered = { user ->
-                            setResult(RESULT_OK, Intent().putExtra("user", user))
-                            finish()
-                        },
-                        onBackToSignIn = {
-                            startActivity(
-                                Intent(
-                                    this@SignUpActivity,
-                                    SignInActivity::class.java,
-                                )
-                            )
-                        }
-                    )
-                }
+                        MainActivity.navigateToFragment(
+                            parentFragmentManager,
+                            SignInFragment(),
+                            bundle
+                        )
+                    },
+                    onBackToSignIn = {
+                        MainActivity.navigateToFragment(
+                            parentFragmentManager,
+                            SignInFragment(),
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun SignUpScreen(
+private fun SignUpScreen(
     modifier: Modifier = Modifier,
     onBackToSignIn: () -> Unit = {},
     onRegistered: (user: User) -> Unit = { _ -> },
@@ -219,3 +221,4 @@ fun SignUpScreen(
         TextButton(onClick = onBackToSignIn) { Text("У вас уже есть аккаунт? Войдите!") }
     }
 }
+
